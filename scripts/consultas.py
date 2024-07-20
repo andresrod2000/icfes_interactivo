@@ -38,7 +38,7 @@ def get_promedios_departamento(connection, start=20142, end=20222):
     query = f"""
     SELECT
       *
-    FROM promedios_colombia
+    FROM promedios_departamento
     WHERE periodo >= {start} AND periodo <= {end}
     LIMIT 1000
     """
