@@ -26,7 +26,16 @@ def execute_query(connection, query):
     finally:
         cursor.close()
 
-def get_promedios_colombia(connection, start=20142, end=20222):
+def reconnect_and_execute_query(query):
+    connection = connect_to_database()
+    if connection:
+        results = execute_query(connection, query)
+        connection.close()
+        return results
+    else:
+        return None
+
+def get_promedios_colombia(start=20142, end=20222):
     # Consulta para obtener los promedios nacionales saber 11 por periodo
     query = f"""
     SELECT
@@ -35,9 +44,9 @@ def get_promedios_colombia(connection, start=20142, end=20222):
     WHERE periodo >= {start} AND periodo <= {end}
     LIMIT 1000
     """
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_departamento(connection, start=20142, end=20222):
+def get_promedios_departamento(start=20142, end=20222):
     # Consulta para obtener los promedios departamentales saber 11 por periodo
     query = f"""
     SELECT
@@ -46,9 +55,9 @@ def get_promedios_departamento(connection, start=20142, end=20222):
     WHERE periodo >= {start} AND periodo <= {end}
     LIMIT 1000
     """
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_colombia_year(connection, start=20142, end=20222):
+def get_promedios_colombia_year(start=20142, end=20222):
     # Consulta para obtener los promedios nacionales saber 11 por año
     query = f"""
     SELECT
@@ -69,9 +78,9 @@ def get_promedios_colombia_year(connection, start=20142, end=20222):
     LIMIT 1000
     """
 
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_departamento_year(connection, start=20142, end=20222):
+def get_promedios_departamento_year(start=20142, end=20222):
     # Consulta para obtener los promedios departamentales saber 11 por año
     query = f"""
     SELECT
@@ -94,9 +103,9 @@ def get_promedios_departamento_year(connection, start=20142, end=20222):
     LIMIT 1000
     """
 
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_colombia_pro(connection, start=20183, end=20226):
+def get_promedios_colombia_pro(start=20183, end=20226):
     # Consulta para obtener los promedios nacionales saber pro por periodo
     query = f"""
     SELECT
@@ -107,9 +116,9 @@ def get_promedios_colombia_pro(connection, start=20183, end=20226):
     LIMIT 1000
     """
 
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_departamento_pro(connection, start=20142, end=20222):
+def get_promedios_departamento_pro(start=20142, end=20222):
     # Consulta para obtener los promedios departamentales saber pro por periodo
     query = f"""
     SELECT
@@ -120,9 +129,9 @@ def get_promedios_departamento_pro(connection, start=20142, end=20222):
     LIMIT 1000
     """
 
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
 
-def get_promedios_colombia_pro_year(connection, start=20183, end=20226):
+def get_promedios_colombia_pro_year(start=20183, end=20226):
     # Consulta para obtener los promedios nacionales saber pro por año
     query = f"""
     SELECT
@@ -142,7 +151,9 @@ def get_promedios_colombia_pro_year(connection, start=20183, end=20226):
     LIMIT 1000
     """
 
-def get_consulta_departamento(connection, departamento, start_year, end_year):
+    return reconnect_and_execute_query(query)
+
+def get_consulta_departamento(departamento, start_year, end_year):
     # Consulta inicial por departamento y rango de años
     start_periodo = start_year * 10 + 1
     end_periodo = end_year * 10 + 2
@@ -156,4 +167,4 @@ def get_consulta_departamento(connection, departamento, start_year, end_year):
     LIMIT 1000000;
     """
 
-    return execute_query(connection, query)
+    return reconnect_and_execute_query(query)
