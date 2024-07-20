@@ -142,7 +142,7 @@ def check_dataframe():
 def consulta_estrato():
     # modo = request.args.get('modo', type=str)
     df = app.consulta_inicial.copy()
-    df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda').mean().round(2).order_by('fami_estratovivienda')
+    df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda').mean().round(2).sort_values('fami_estratovivienda')
     df.columns = ['Estrato', *PROMEDIOS_SABER11]
     return df.to_json(orient='records'), 200
 
