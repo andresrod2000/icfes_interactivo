@@ -153,6 +153,30 @@ def get_promedios_colombia_pro_year(start=20183, end=20226):
 
     return reconnect_and_execute_query(query)
 
+def get_promedios_departamento_pro_year(start=20142, end=20222):
+    # Consulta para obtener los promedios departamentales saber pro por año
+    query = f"""
+    SELECT
+        LEFT(periodo, 4) AS year,
+        departamento,
+        CAST(AVG(promedio_c_ciudadana) AS DECIMAL(25,2)) AS promedio_c_ciudadana,
+        CAST(AVG(promedio_comuni_escrita) AS DECIMAL(25,2)) AS promedio_comuni_escrita,
+        CAST(AVG(promedio_ingles) AS DECIMAL(25,2)) AS promedio_ingles,
+        CAST(AVG(promedio_lectura_critica) AS DECIMAL(25,2)) AS promedio_lectura_critica,
+        CAST(AVG(promedio_razona_cuantitativo) AS DECIMAL(25,2)) AS promedio_razona_cuantitativo
+    FROM 
+        promedios_departamento_pro
+    WHERE periodo >= {start} AND periodo <= {end}
+    GROUP BY 
+        departamento, 
+        LEFT(periodo, 4)
+    ORDER BY 
+        year
+    LIMIT 1000
+    """
+
+    return reconnect_and_execute_query(query)
+
 def get_consulta_departamento(departamento, start_year, end_year):
     # Consulta inicial por departamento y rango de años
     start_periodo = start_year * 10 + 1
