@@ -1,4 +1,4 @@
-from flask import Flask, g, request
+from flask import Flask, g, request, jsonify
 import pandas as pd
 from flask_cors import CORS
 
@@ -100,9 +100,24 @@ def consulta_departamento():
 
     return results
 
-@app.route('/saber11/consulta_inicial/test')
-def test_consulta_inicial():
-    return g.consulta_inicial.to_json()
+@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
+def get_data():
+    df = get_consulta_inicial()
+    if df.empty:
+        return jsonify({"error": "No hay datos disponibles"}), 400
+    
+    return df.to_json(orient='records'), 200
+
+@app.route('/check_dataframe', methods=['GET'])
+def check_dataframe():
+    df = get_consulta_inicial()
+    info = {
+        "is_empty": df.empty,
+        "shape": df.shape if not df.empty else None,
+        "columns": df.columns.tolist() if not df.empty else None,
+        "sample": df.head().to_dict(orient='records') if not df.empty else None
+    }
+    return jsonify(info), 200
 
 
 if __name__ == '__main__':
