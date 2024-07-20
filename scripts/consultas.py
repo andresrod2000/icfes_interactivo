@@ -142,11 +142,8 @@ def get_promedios_colombia_pro_year(connection, start=20183, end=20226):
     LIMIT 1000
     """
 
-def get_consulta_departamento(connection, departamento, start, end):
+def get_consulta_departamento(connection, departamento, start_year, end_year):
     # Consulta inicial por departamento y rango de años
-    start_year = int(str(start)[:4])
-    end_year = int(str(end)[:4])
-
     query = f"""
     SELECT
     *
