@@ -85,20 +85,8 @@ def promedios_departamento_year_saberpro():
     return results
 
 # <---------------- Consulta inicial por departamento y rango ---------------->
-# @app.route('/saber11/consulta_inicial')
-# def consulta_departamento():
-#     departamento = request.args.get('departamento', type=str)
-#     start = request.args.get('start', type=int)
-#     end = request.args.get('end', type=int)
-    
-
-#     results = consultas.get_consulta_departamento(departamento, start, end)
-
-#     g.consulta_inicial = pd.DataFrame(results)
-
-#     return results
-
 @app.route('/saber11/consulta_inicial')
+# Carga la consulta inicial por departamento y rango de años en un DataFrame y lo guarda en el contexto de la aplicación
 def consulta_departamento():
     departamento = request.args.get('departamento', type=str)
     start = request.args.get('start', type=int)
@@ -113,21 +101,14 @@ def consulta_departamento():
         # Convertir los resultados a un DataFrame y guardarlo en el contexto de la aplicación
         app.consulta_inicial = pd.DataFrame(results)
         
-        return f'Consulta exitosa {app.consulta_inicial.size}', 200
+        return f'Consulta exitosa, size de la consulta: {app.consulta_inicial.size}', 200
     
     except Exception as e:
         print(f"Error en consulta_departamento: {str(e)}")
         return jsonify({"error": f"Error al realizar la consulta: {str(e)}"}), 500
 
-@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
-def get_data():
-    df = app.consulta_inicial
-    if df.empty:
-        return jsonify({"error": "No hay datos disponibles"}), 400
-    
-    return df.to_json(orient='records'), 200
-
-@app.route('/saber11/consulta_inicial/test2', methods=['GET'])
+@app.route('/saber11/consulta_inicial/test', methods=['GET'])
+# Verifica si la consulta inicial se cargó correctamente en el contexto de la aplicación
 def check_dataframe():
     df = app.consulta_inicial
     info = {
@@ -138,7 +119,15 @@ def check_dataframe():
     }
     return jsonify(info), 200
 
+@app.route('saber11/consulta_inicial/municipios')
+# Obtiene la lista de municipios disponibles en la consulta inicial
+def get_municipios():
+    df = app.consulta_inicial.copy()
+    municipios = df['cole_mcpio_ubicacion'].unique().tolist()
+    return municipios
+
 @app.route('/saber11/consulta_inicial/estrato')
+# Obtiene los promedios de los puntajes SABER 11 por estrato
 def consulta_estrato():
     # modo = request.args.get('modo', type=str)
     df = app.consulta_inicial.copy()
