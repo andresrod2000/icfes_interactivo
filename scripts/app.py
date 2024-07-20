@@ -119,7 +119,7 @@ def check_dataframe():
     }
     return jsonify(info), 200
 
-@app.route('saber11/consulta_inicial/municipios')
+@app.route('/saber11/consulta_inicial/municipios')
 # Obtiene la lista de municipios disponibles en la consulta inicial
 def get_municipios():
     df = app.consulta_inicial.copy()
