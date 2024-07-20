@@ -104,10 +104,8 @@ def consulta_departamento():
 
 @app.route('/saber11/consulta_inicial/test')
 def test_consulta_inicial():
-    return g.consulta_inicial[g.consulta_inicial.periodo == 20201].to_json()
+    return g.consulta_inicial.to_json()
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
-    
