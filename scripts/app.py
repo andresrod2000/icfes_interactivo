@@ -140,23 +140,37 @@ def consulta_municipio():
     app.consulta_municipio = df
     return f'Consulta exitosa, size de la consulta: {app.consulta_municipio.size}', 200
 
+@app.route('/saber11/consulta_municipio/test', methods=['GET'])
+# Verifica si la consulta por municipio se guardó correctamente en el contexto de la aplicación
+def check_dataframe():
+    df = app.consulta_municipio
+    info = {
+        "is_empty": df.empty,
+        "shape": df.shape if not df.empty else None,
+        "columns": df.columns.tolist() if not df.empty else None,
+        "sample": df.head().to_dict(orient='records') if not df.empty else None
+    }
+    return jsonify(info), 200
+
 @app.route('/saber11/consultas/estrato')
 # Obtiene los promedios de los puntajes SABER 11 por estrato
 def consulta_estrato():
     municipio = request.args.get('municipio', type=str)
-    
+
     if not municipio:
         df = app.consulta_inicial.copy()
         df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
         df.columns = ['Estrato', *PROMEDIOS_SABER11]
+        return df.to_json(orient='records'), 200
 
-    else:
+    elif app.consulta_municipio is not None:
         df = app.consulta_municipio.copy()
         df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
         df.columns = ['Estrato', *PROMEDIOS_SABER11]
-    return df.to_json(orient='records'), 200
-
-
+        return df.to_json(orient='records'), 200
+    
+    else:
+        return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
 
 
 
