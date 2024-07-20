@@ -9,6 +9,10 @@ import consultas
 app = Flask(__name__)
 CORS(app)
 
+PUNTAJES_SABER11 = ['punt_ingles', 'punt_matematicas', 'punt_sociales_ciudadanas', 'punt_c_naturales', 'punt_lectura_critica', 'punt_global']
+PROMEDIOS_SABER11 = ['promedio_ingles', 'promedio_matematicas', 'promedio_sociales_ciudadanas', 'promedio_c_naturales', 'promedio_lectura_critica', 'promedio_global']
+PUNTAJES_SABERPRO = ['']
+
 app.consulta_inicial = None
 
 # <---------------- Estaticos del inicio ---------------->
@@ -99,7 +103,6 @@ def consulta_departamento():
     departamento = request.args.get('departamento', type=str)
     start = request.args.get('start', type=int)
     end = request.args.get('end', type=int)
-    modo = request.args.get('modo', type=str)
     
     if not all([departamento, start, end]):
         return jsonify({"error": "Faltan parámetros requeridos"}), 400
@@ -110,16 +113,11 @@ def consulta_departamento():
         # Convertir los resultados a un DataFrame y guardarlo en el contexto de la aplicación
         app.consulta_inicial = pd.DataFrame(results)
         
+        return f'Consulta exitosa {app.consulta_inicial.size}', 200
     
     except Exception as e:
         print(f"Error en consulta_departamento: {str(e)}")
         return jsonify({"error": f"Error al realizar la consulta: {str(e)}"}), 500
-    
-    if modo == 'estrato':
-        df = app.consulta_inicial.copy()
-        df = df.groupby('fami_estratovivienda').agg({'punt_global': 'mean'}).reset_index()
-        df.columns = ['Estrato', 'Promedio']
-        return df.to_json(orient='records'), 200
 
 @app.route('/saber11/consulta_inicial/test1', methods=['GET'])
 def get_data():
@@ -129,7 +127,7 @@ def get_data():
     
     return df.to_json(orient='records'), 200
 
-@app.route('/saber11/consulta_inicial/check_dataframe', methods=['GET'])
+@app.route('/saber11/consulta_inicial/test2', methods=['GET'])
 def check_dataframe():
     df = app.consulta_inicial
     info = {
@@ -139,6 +137,14 @@ def check_dataframe():
         "sample": df.head().to_dict(orient='records') if not df.empty else None
     }
     return jsonify(info), 200
+
+@app.route('/saber11/consulta_inicial/estrato')
+def consulta_estrato():
+    # modo = request.args.get('modo', type=str)
+    df = app.consulta_inicial.copy()
+    df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda').mean().round(2).order_by('fami_estratovivienda')
+    df.columns = ['Estrato', *PROMEDIOS_SABER11]
+    return df.to_json(orient='records'), 200
 
 
 
