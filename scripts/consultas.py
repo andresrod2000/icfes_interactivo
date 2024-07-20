@@ -178,15 +178,31 @@ def get_promedios_departamento_pro_year(start=20142, end=20222):
     return reconnect_and_execute_query(query)
 
 def get_consulta_departamento(departamento, start_year, end_year):
-    # Consulta inicial por departamento y rango de años
+    # Consulta inicial por departamento y rango de años para saber 11
     start_periodo = start_year * 10 + 1
-    end_periodo = end_year * 10 + 2
+    end_periodo = end_year * 10 + 9
 
     query = f"""
     SELECT
     *
     FROM saber11
     WHERE cole_depto_ubicacion = "{departamento}" AND periodo >= {start_periodo} AND periodo <= {end_periodo}
+    ORDER BY periodo
+    LIMIT 1000000;
+    """
+
+    return reconnect_and_execute_query(query)
+
+def get_consulta_departamento_pro(departamento, start_year, end_year):
+    # Consulta inicial por departamento y rango de años para saber pro
+    start_periodo = start_year * 10 + 1
+    end_periodo = end_year * 10 + 9
+
+    query = f"""
+    SELECT
+    *
+    FROM saberpro_reduced
+    WHERE inst_depto_ubicacion = "{departamento}" AND periodo >= {start_periodo} AND periodo <= {end_periodo}
     ORDER BY periodo
     LIMIT 1000000;
     """
