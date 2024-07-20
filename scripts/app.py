@@ -14,6 +14,7 @@ PROMEDIOS_SABER11 = ['promedio_ingles', 'promedio_matematicas', 'promedio_social
 PUNTAJES_SABERPRO = ['']
 
 app.consulta_inicial = None
+app.consulta_municipio = None
 
 # <---------------- Estaticos del inicio ---------------->
 @app.route('/')
@@ -126,14 +127,36 @@ def get_municipios():
     municipios = df['cole_mcpio_ubicacion'].unique().tolist()
     return municipios
 
-@app.route('/saber11/consulta_inicial/estrato')
+@app.route('/saber11/consulta_municipio')
+# Selecciona la parte del dataframe correspondiente a un municipio específico
+def consulta_municipio():
+    municipio = request.args.get('municipio', type=str)
+    if not municipio:
+        return jsonify({"error": "Falta el parámetro 'municipio'"}), 400
+
+    df = app.consulta_inicial.copy()
+    df = df[df['cole_mcpio_ubicacion'] == municipio]
+    df.drop(columns=['cole_mcpio_ubicacion'], inplace=True)
+    app.consulta_municipio = df
+    return f'Consulta exitosa, size de la consulta: {app.consulta_municipio.size}', 200
+
+@app.route('/saber11/consultas/estrato')
 # Obtiene los promedios de los puntajes SABER 11 por estrato
 def consulta_estrato():
-    # modo = request.args.get('modo', type=str)
-    df = app.consulta_inicial.copy()
-    df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
-    df.columns = ['Estrato', *PROMEDIOS_SABER11]
+    municipio = request.args.get('municipio', type=str)
+    
+    if not municipio:
+        df = app.consulta_inicial.copy()
+        df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
+        df.columns = ['Estrato', *PROMEDIOS_SABER11]
+
+    else:
+        df = app.consulta_municipio.copy()
+        df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
+        df.columns = ['Estrato', *PROMEDIOS_SABER11]
     return df.to_json(orient='records'), 200
+
+
 
 
 
