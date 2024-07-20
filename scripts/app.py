@@ -1,9 +1,12 @@
 from flask import Flask, g, request
 import pandas as pd
+from flask_cors import CORS
+
 
 import consultas
 
 app = Flask(__name__)
+CORS(app)
 
 conn = consultas.connect_to_database()
 
