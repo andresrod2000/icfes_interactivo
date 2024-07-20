@@ -101,6 +101,9 @@ def consulta_departamento():
         
         # Convertir los resultados a un DataFrame y guardarlo en el contexto de la aplicación
         app.consulta_inicial = pd.DataFrame(results)
+
+        # Reiniciar la consulta por municipio
+        app.consulta_municipio = None
         
         return f'Consulta exitosa, size de la consulta: {app.consulta_inicial.size}', 200
     
