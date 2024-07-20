@@ -99,6 +99,7 @@ def consulta_departamento():
     departamento = request.args.get('departamento', type=str)
     start = request.args.get('start', type=int)
     end = request.args.get('end', type=int)
+    modo = request.args.get('modo', type=str)
     
     if not all([departamento, start, end]):
         return jsonify({"error": "Faltan parámetros requeridos"}), 400
@@ -106,20 +107,19 @@ def consulta_departamento():
     try:
         results = consultas.get_consulta_departamento(departamento, start, end)
         
-        # Convertir los resultados a un DataFrame y guardarlo en g
+        # Convertir los resultados a un DataFrame y guardarlo en el contexto de la aplicación
         app.consulta_inicial = pd.DataFrame(results)
         
-        return results
     
     except Exception as e:
         print(f"Error en consulta_departamento: {str(e)}")
         return jsonify({"error": f"Error al realizar la consulta: {str(e)}"}), 500
-
-# @app.after_request
-# def after_request(response):
-#     if hasattr(g, 'consulta_inicial'):
-#         print(f"After request: consulta_inicial DataFrame shape: {g.consulta_inicial.shape}")
-#     return response
+    
+    if modo == 'estrato':
+        df = app.consulta_inicial.copy()
+        df = df.groupby('fami_estratovivienda').agg({'punt_global': 'mean'}).reset_index()
+        df.columns = ['Estrato', 'Promedio']
+        return df.to_json(orient='records'), 200
 
 @app.route('/saber11/consulta_inicial/test1', methods=['GET'])
 def get_data():
@@ -129,7 +129,7 @@ def get_data():
     
     return df.to_json(orient='records'), 200
 
-@app.route('/check_dataframe', methods=['GET'])
+@app.route('/saber11/consulta_inicial/check_dataframe', methods=['GET'])
 def check_dataframe():
     df = app.consulta_inicial
     info = {
