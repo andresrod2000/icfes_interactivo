@@ -87,26 +87,26 @@ def promedios_departamento_year_saberpro():
     return results
 
 # <---------------- Consulta inicial por departamento y rango ---------------->
-@app.route('/saber11/consulta_inicial')
-def consulta_departamento():
-    departamento = request.args.get('departamento', type=str)
-    start = request.args.get('start', type=int)
-    end = request.args.get('end', type=int)
+# @app.route('/saber11/consulta_inicial')
+# def consulta_departamento():
+#     departamento = request.args.get('departamento', type=str)
+#     start = request.args.get('start', type=int)
+#     end = request.args.get('end', type=int)
     
 
-    results = consultas.get_consulta_departamento(departamento, start, end)
+#     results = consultas.get_consulta_departamento(departamento, start, end)
 
-    g.consulta_inicial = pd.DataFrame(results)
+#     g.consulta_inicial = pd.DataFrame(results)
 
-    return results
+#     return results
 
-# @app.route('/saber11/consulta_inicial/test1', methods=['GET'])
-# def get_data():
-#     df = get_consulta_inicial()
-#     if df.empty:
-#         return jsonify({"error": "No hay datos disponibles"}), 400
+@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
+def get_data():
+    df = get_consulta_inicial()
+    if df.empty:
+        return jsonify({"error": "No hay datos disponibles"}), 400
     
-#     return df.to_json(orient='records'), 200
+    return df.to_json(orient='records'), 200
 
 @app.route('/saber11/consulta_inicial')
 def consulta_departamento():
