@@ -186,7 +186,7 @@ def get_consulta_departamento(departamento, start_year, end_year):
     SELECT
     *
     FROM saber11
-    WHERE cole_depto_ubicacion = {departamento} AND periodo >= {start_periodo} AND periodo <= {end_periodo}
+    WHERE cole_depto_ubicacion = "{departamento}" AND periodo >= {start_periodo} AND periodo <= {end_periodo}
     ORDER BY periodo
     LIMIT 1000000;
     """
