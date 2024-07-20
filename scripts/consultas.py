@@ -44,6 +44,28 @@ def get_promedios_departamento(connection, start=20142, end=20222):
     """
     return execute_query(connection, query)
 
+def get_promedios_colombia_year(connection, start=20142, end=20222):
+    query = """
+    SELECT
+        LEFT(periodo, 4) AS year,
+        CAST(AVG(promedio_global) AS DECIMAL(25,2)) AS promedio_global,
+        CAST(AVG(promedio_lectura_critica) AS DECIMAL(25,2)) AS promedio_lectura_critica,
+        CAST(AVG(promedio_matematicas) AS DECIMAL(25,2)) AS promedio_matematicas,
+        CAST(AVG(promedio_c_naturales) AS DECIMAL(25,2)) AS promedio_c_naturales,
+        CAST(AVG(promedio_sociales_ciudadanas) AS DECIMAL(25,2)) AS promedio_sociales_ciudadanas,
+        CAST(AVG(promedio_ingles) AS DECIMAL(25,2)) AS promedio_ingles
+    FROM 
+        promedios_colombia
+    WHERE periodo >=20142
+    GROUP BY 
+        LEFT(periodo, 4)
+    ORDER BY 
+        year
+    LIMIT 1000
+    """
+
+    return execute_query(connection, query)
+
 def get_promedios_departamento_year(connection, start=20142, end=20222):
     query = """
     SELECT
@@ -67,6 +89,3 @@ def get_promedios_departamento_year(connection, start=20142, end=20222):
     """
 
     return execute_query(connection, query)
-
-connection = connect_to_database()
-connection.close()
