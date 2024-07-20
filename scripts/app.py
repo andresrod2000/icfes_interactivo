@@ -100,13 +100,52 @@ def consulta_departamento():
 
     return results
 
-@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
-def get_data():
-    df = get_consulta_inicial()
-    if df.empty:
-        return jsonify({"error": "No hay datos disponibles"}), 400
+# @app.route('/saber11/consulta_inicial/test1', methods=['GET'])
+# def get_data():
+#     df = get_consulta_inicial()
+#     if df.empty:
+#         return jsonify({"error": "No hay datos disponibles"}), 400
     
-    return df.to_json(orient='records'), 200
+#     return df.to_json(orient='records'), 200
+
+@app.route('/saber11/consulta_inicial')
+def consulta_departamento():
+    departamento = request.args.get('departamento', type=str)
+    start = request.args.get('start', type=int)
+    end = request.args.get('end', type=int)
+    
+    if not all([departamento, start, end]):
+        return jsonify({"error": "Faltan parámetros requeridos"}), 400
+
+    try:
+        results = consultas.get_consulta_departamento(departamento, start, end)
+        
+        # Convertir los resultados a un DataFrame y guardarlo en g
+        g.consulta_inicial = pd.DataFrame(results)
+        
+        # Verificar que se ha guardado correctamente
+        if hasattr(g, 'consulta_inicial') and isinstance(g.consulta_inicial, pd.DataFrame):
+            print(f"DataFrame guardado en g.consulta_inicial. Shape: {g.consulta_inicial.shape}")
+            
+            # Devolver información sobre el DataFrame guardado
+            return jsonify({
+                "message": "Consulta realizada y guardada exitosamente",
+                "shape": g.consulta_inicial.shape,
+                "columns": g.consulta_inicial.columns.tolist(),
+                "sample": g.consulta_inicial.head().to_dict(orient='records')
+            }), 200
+        else:
+            return jsonify({"error": "Error al guardar el DataFrame en g"}), 500
+    
+    except Exception as e:
+        print(f"Error en consulta_departamento: {str(e)}")
+        return jsonify({"error": f"Error al realizar la consulta: {str(e)}"}), 500
+
+@app.after_request
+def after_request(response):
+    if hasattr(g, 'consulta_inicial'):
+        print(f"After request: consulta_inicial DataFrame shape: {g.consulta_inicial.shape}")
+    return response
 
 @app.route('/check_dataframe', methods=['GET'])
 def check_dataframe():
