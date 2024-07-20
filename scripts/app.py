@@ -142,7 +142,7 @@ def consulta_municipio():
 
 @app.route('/saber11/consulta_municipio/test', methods=['GET'])
 # Verifica si la consulta por municipio se guardó correctamente en el contexto de la aplicación
-def check_dataframe():
+def check_dataframe_municipio():
     df = app.consulta_municipio
     info = {
         "is_empty": df.empty,
