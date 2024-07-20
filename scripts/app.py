@@ -1,6 +1,7 @@
 from flask import Flask, g, request, jsonify
 import pandas as pd
 from flask_cors import CORS
+import requests
 
 
 import consultas
@@ -8,14 +9,7 @@ import consultas
 app = Flask(__name__)
 CORS(app)
 
-def get_consulta_inicial():
-    if 'consulta_inicial' not in g:
-        g.consulta_inicial = pd.DataFrame()  # Inicializa un DataFrame vacío
-    return g.consulta_inicial
-
-@app.before_request
-def before_request():
-    get_consulta_inicial() 
+app.consulta_inicial = None
 
 # <---------------- Estaticos del inicio ---------------->
 @app.route('/')
@@ -100,14 +94,6 @@ def promedios_departamento_year_saberpro():
 
 #     return results
 
-@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
-def get_data():
-    df = get_consulta_inicial()
-    if df.empty:
-        return jsonify({"error": "No hay datos disponibles"}), 400
-    
-    return df.to_json(orient='records'), 200
-
 @app.route('/saber11/consulta_inicial')
 def consulta_departamento():
     departamento = request.args.get('departamento', type=str)
@@ -121,35 +107,31 @@ def consulta_departamento():
         results = consultas.get_consulta_departamento(departamento, start, end)
         
         # Convertir los resultados a un DataFrame y guardarlo en g
-        g.consulta_inicial = pd.DataFrame(results)
+        app.consulta_inicial = pd.DataFrame(results)
         
-        # Verificar que se ha guardado correctamente
-        if hasattr(g, 'consulta_inicial') and isinstance(g.consulta_inicial, pd.DataFrame):
-            print(f"DataFrame guardado en g.consulta_inicial. Shape: {g.consulta_inicial.shape}")
-            
-            # Devolver información sobre el DataFrame guardado
-            return jsonify({
-                "message": "Consulta realizada y guardada exitosamente",
-                "shape": g.consulta_inicial.shape,
-                "columns": g.consulta_inicial.columns.tolist(),
-                "sample": g.consulta_inicial.head().to_dict(orient='records')
-            }), 200
-        else:
-            return jsonify({"error": "Error al guardar el DataFrame en g"}), 500
+        return results
     
     except Exception as e:
         print(f"Error en consulta_departamento: {str(e)}")
         return jsonify({"error": f"Error al realizar la consulta: {str(e)}"}), 500
 
-@app.after_request
-def after_request(response):
-    if hasattr(g, 'consulta_inicial'):
-        print(f"After request: consulta_inicial DataFrame shape: {g.consulta_inicial.shape}")
-    return response
+# @app.after_request
+# def after_request(response):
+#     if hasattr(g, 'consulta_inicial'):
+#         print(f"After request: consulta_inicial DataFrame shape: {g.consulta_inicial.shape}")
+#     return response
+
+@app.route('/saber11/consulta_inicial/test1', methods=['GET'])
+def get_data():
+    df = app.consulta_inicial
+    if df.empty:
+        return jsonify({"error": "No hay datos disponibles"}), 400
+    
+    return df.to_json(orient='records'), 200
 
 @app.route('/check_dataframe', methods=['GET'])
 def check_dataframe():
-    df = get_consulta_inicial()
+    df = app.consulta_inicial
     info = {
         "is_empty": df.empty,
         "shape": df.shape if not df.empty else None,
@@ -158,6 +140,24 @@ def check_dataframe():
     }
     return jsonify(info), 200
 
+
+
+
+#<---------------- Integración con Rasa ---------------->
+@app.route('/chat', methods=['POST'])
+def chat():
+    user_message = request.json.get('message')
+
+    # Enviar mensaje al servidor de Rasa
+    rasa_response = requests.post('http://localhost:5005/webhooks/rest/webhook', json={"sender": "user", "message": user_message})
+    rasa_response_json = rasa_response.json()
+
+    # Extraer la respuesta del bot de Rasa
+    bot_response = ''
+    if rasa_response_json:
+        bot_response = rasa_response_json[0].get('text')
+
+    return jsonify({"response": bot_response})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
