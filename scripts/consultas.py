@@ -142,4 +142,18 @@ def get_promedios_colombia_pro_year(connection, start=20183, end=20226):
     LIMIT 1000
     """
 
+def get_consulta_departamento(connection, departamento, start, end):
+    # Consulta inicial por departamento y rango de años
+    start_year = int(str(start)[:4])
+    end_year = int(str(end)[:4])
+
+    query = f"""
+    SELECT
+    *
+    FROM saber11
+    WHERE cole_depto_ubicacion = {departamento} AND periodo >= {start_year} AND periodo <= {end_year}
+    ORDER BY periodo
+    LIMIT 1000000;
+    """
+
     return execute_query(connection, query)
