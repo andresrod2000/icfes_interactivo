@@ -85,6 +85,8 @@ def promedios_departamento_year_saberpro():
     results = consultas.get_promedios_departamento_pro_year()
     return results
 
+# <--------------------------------Saber 11-------------------------------->
+
 # <---------------- Consulta inicial por departamento y rango ---------------->
 @app.route('/saber11/consulta_inicial/DELETE')
 def delete_consulta_inicial():
@@ -131,9 +133,13 @@ def check_dataframe():
 @app.route('/saber11/consulta_inicial/municipios')
 # Obtiene la lista de municipios disponibles en la consulta inicial
 def get_municipios():
+    if app.consulta_inicial is None:
+        return jsonify({"error": "No se ha cargado la consulta inicial"}), 400
     df = app.consulta_inicial.copy()
     municipios = df['cole_mcpio_ubicacion'].unique().tolist()
     return municipios
+
+# <-------------------- Consulta por municipio ------------------------->
 
 @app.route('/saber11/consulta_municipio')
 # Selecciona la parte del dataframe correspondiente a un municipio específico
@@ -160,6 +166,8 @@ def check_dataframe_municipio():
     }
     return jsonify(info), 200
 
+# <--------------------- Consultas generales (estados) --------------------->
+
 @app.route('/saber11/consultas/estrato')
 # Obtiene los promedios de los puntajes SABER 11 por estrato
 def consulta_estrato():
@@ -180,6 +188,8 @@ def consulta_estrato():
     else:
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
 
+
+# <------------------------ Saber Pro ---------------------------->
 
 
 
