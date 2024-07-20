@@ -86,6 +86,11 @@ def promedios_departamento_year_saberpro():
     return results
 
 # <---------------- Consulta inicial por departamento y rango ---------------->
+@app.route('/saber11/consulta_inicial/DELETE')
+def delete_consulta_inicial():
+    app.consulta_inicial = None
+    return 'Consulta inicial eliminada', 200
+
 @app.route('/saber11/consulta_inicial')
 # Carga la consulta inicial por departamento y rango de años en un DataFrame y lo guarda en el contexto de la aplicación
 def consulta_departamento():
