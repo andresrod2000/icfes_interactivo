@@ -325,6 +325,16 @@ def consulta_estrato_pro():
     df.columns = ['Estrato', *PROMEDIOS_SABERPRO]
     return df.to_json(orient='records'), 200
 
+# <------------ Rutas para modelos predictivos ---------------->
+@app.route('/predict/get_municipios/<depto>')
+def predict_get_municipio(depto):
+    municipios= consultas.get_municipio_predict(depto)
+    return municipios
+
+@app.route('/predict/get_colegio/<depto>/<municipio>')
+def predict_get_colegios(depto, municipio):
+    colegios = consultas.get_colegio_predict(depto,municipio)
+    return jsonify(colegios)
 
 #<---------------- Integración con Rasa ---------------->
 @app.route('/chat', methods=['POST'])

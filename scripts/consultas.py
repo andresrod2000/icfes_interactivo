@@ -206,3 +206,28 @@ def get_consulta_departamento_pro(departamento, start_year, end_year):
     """
 
     return reconnect_and_execute_query(query)
+
+
+
+# Funciones para modelos predictivos:
+def get_municipio_predict(departamento):
+    query = f"""
+    SELECT
+    cole_mcpio_ubicacion
+    FROM saber11
+    WHERE `cole_depto_ubicacion` = "{departamento}" AND periodo >= 20142 AND periodo <= 20224
+    group by cole_mcpio_ubicacion
+    LIMIT 1000000;
+    """
+    return reconnect_and_execute_query(query)
+
+def get_colegio_predict(departamento,municipio):
+    query = f"""
+    SELECT
+    COLE_COD_DANE_ESTABLECIMIENTO,COLE_NOMBRE_ESTABLECIMIENTO
+    FROM saber11
+    WHERE cole_depto_ubicacion = "{departamento}" and cole_mcpio_ubicacion = "{municipio}" AND periodo >= 20142 AND periodo <= 20224
+    group by COLE_COD_DANE_ESTABLECIMIENTO ,COLE_NOMBRE_ESTABLECIMIENTO 
+    LIMIT 1000000;
+    """
+    return reconnect_and_execute_query(query)
