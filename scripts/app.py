@@ -150,7 +150,7 @@ def get_municipios():
 def consulta_municipio():
     municipio = request.args.get('municipio', type=str)
     if not municipio:
-        return jsonify({"error": "Falta el parámetro 'municipio'"}), 400
+        return jsonify({"error": "Falta el parámetro 'municipio'"})
 
     df = app.consulta_inicial.copy()
     df = df[df['cole_mcpio_ubicacion'] == municipio]
