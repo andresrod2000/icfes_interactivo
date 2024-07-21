@@ -176,7 +176,7 @@ def check_dataframe_municipio():
 def consulta_historico():
     municipio = request.args.get('municipio', type=str)
 
-    if not municipio or municipio == 'Seleccione':
+    if not municipio or municipio == 'DEPARTAMENTO':
         df = app.consulta_inicial.copy()
     
     elif app.consulta_municipio is not None:
