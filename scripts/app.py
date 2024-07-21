@@ -116,7 +116,7 @@ def consulta_departamento():
         # Reiniciar la consulta por municipio
         app.consulta_municipio = None
         
-        return f'Consulta exitosa, size de la consulta: {app.consulta_inicial.size}', 200
+        return f'Consulta exitosa, size de la consulta: {app.consulta_inicial.__len__()}', 200
     
     except Exception as e:
         print(f"Error en consulta_departamento: {str(e)}")
@@ -156,7 +156,7 @@ def consulta_municipio():
     df = df[df['cole_mcpio_ubicacion'] == municipio]
     df.drop(columns=['cole_mcpio_ubicacion'], inplace=True)
     app.consulta_municipio = df
-    return f'Consulta exitosa, size de la consulta: {app.consulta_municipio.size}', 200
+    return f'Consulta exitosa, size de la consulta: {app.consulta_municipio.__len__()}', 200
 
 @app.route('/saber11/consulta_municipio/test', methods=['GET'])
 # Verifica si la consulta por municipio se guardó correctamente en el contexto de la aplicación
@@ -236,7 +236,7 @@ def consulta_departamento_pro():
         # Reiniciar la consulta por municipio
         app.consulta_municipio_pro = None
         
-        return f'Consulta exitosa, size de la consulta: {app.consulta_inicial_pro.size}', 200
+        return f'Consulta exitosa, size de la consulta: {app.consulta_inicial_pro.__len__()}', 200
     
     except Exception as e:
         print(f"Error en consulta_departamento_pro: {str(e)}")
@@ -273,7 +273,7 @@ def consulta_municipio_pro():
     df = df[df['ESTU_INST_MUNICIPIO'] == municipio]
     df.drop(columns=['ESTU_INST_MUNICIPIO'], inplace=True)
     app.consulta_municipio_pro = df
-    return f'Consulta exitosa, size de la consulta: {app.consulta_municipio_pro.size}', 200
+    return f'Consulta exitosa, size de la consulta: {app.consulta_municipio_pro.__len__()}', 200
 
 @app.route('/saberpro/consulta_municipio/test', methods=['GET'])
 def check_dataframe_municipio_pro():
