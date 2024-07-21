@@ -185,8 +185,9 @@ def consulta_historico():
     else:
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
     
-    df = df[['periodo', *PUNTAJES_SABER11]].groupby('periodo', as_index=False).mean().round(2).sort_values('periodo')
-    df.columns = ['periodo', *PROMEDIOS_SABER11]
+    df["year"] = df["periodo"].apply(lambda x: int(str(x)[:4]))
+    df = df[['year', *PUNTAJES_SABER11]].groupby('year', as_index=False).mean().round(2).sort_values('year')
+    df.columns = ['year', *PROMEDIOS_SABER11]
     return df.to_json(orient='records'), 200
     
 
@@ -299,8 +300,9 @@ def consulta_historico_pro():
     else:
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
     
-    df = df[['periodo', *PUNTAJES_SABERPRO]].groupby('periodo', as_index=False).mean().round(2).sort_values('periodo')
-    df.columns = ['periodo', *PROMEDIOS_SABERPRO]
+    df["year"] = df["periodo"].apply(lambda x: int(str(x)[:4]))
+    df = df[['year', *PUNTAJES_SABERPRO]].groupby('year', as_index=False).mean().round(2).sort_values('year')
+    df.columns = ['year', *PROMEDIOS_SABERPRO]
     return df.to_json(orient='records'), 200
 
 @app.route('/saberpro/consultas/estrato')
