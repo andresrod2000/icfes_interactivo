@@ -171,27 +171,42 @@ def check_dataframe_municipio():
     return jsonify(info), 200
 
 # <--------------------- Consultas generales (estados) --------------------->
+@app.route('/saber11/consultas/historico')
+# Obtiene los promedios de los puntajes SABER 11 por periodo
+def consulta_historico():
+    municipio = request.args.get('municipio', type=str)
+
+    if not municipio or municipio == 'Seleccione':
+        df = app.consulta_inicial.copy()
+    
+    elif app.consulta_municipio is not None:
+        df = app.consulta_municipio.copy()
+    
+    else:
+        return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
+    
+    df = df[['periodo', *PUNTAJES_SABER11]].groupby('periodo', as_index=False).mean().round(2).sort_values('periodo')
+    df.columns = ['periodo', *PROMEDIOS_SABER11]
+    return df.to_json(orient='records'), 200
+    
 
 @app.route('/saber11/consultas/estrato')
 # Obtiene los promedios de los puntajes SABER 11 por estrato
 def consulta_estrato():
     municipio = request.args.get('municipio', type=str)
 
-    if not municipio:
+    if not municipio or municipio == 'Seleccione':
         df = app.consulta_inicial.copy()
-        df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
-        df.columns = ['Estrato', *PROMEDIOS_SABER11]
-        return df.to_json(orient='records'), 200
 
     elif app.consulta_municipio is not None:
         df = app.consulta_municipio.copy()
-        df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
-        df.columns = ['Estrato', *PROMEDIOS_SABER11]
-        return df.to_json(orient='records'), 200
     
     else:
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
 
+    df = df[['fami_estratovivienda', *PUNTAJES_SABER11]].groupby('fami_estratovivienda', as_index=False).mean().round(2).sort_values('fami_estratovivienda')
+    df.columns = ['Estrato', *PROMEDIOS_SABER11]
+    return df.to_json(orient='records'), 200
 
 # <---------------------------- Saber Pro ---------------------------->
 
@@ -271,25 +286,39 @@ def check_dataframe_municipio_pro():
     return jsonify(info), 200
 
 # <--------------------- Consultas generales (estados) --------------------->
+@app.route('/saberpro/consultas/historico')
+def consulta_historico_pro():
+    municipio = request.args.get('municipio', type=str)
+
+    if not municipio or municipio == 'Seleccione':
+        df = app.consulta_inicial_pro.copy()
+    
+    elif app.consulta_municipio_pro is not None:
+        df = app.consulta_municipio_pro.copy()
+    
+    else:
+        return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
+    
+    df = df[['periodo', *PUNTAJES_SABERPRO]].groupby('periodo', as_index=False).mean().round(2).sort_values('periodo')
+    df.columns = ['periodo', *PROMEDIOS_SABERPRO]
+    return df.to_json(orient='records'), 200
+
 @app.route('/saberpro/consultas/estrato')
 def consulta_estrato_pro():
     municipio = request.args.get('municipio', type=str)
 
-    if not municipio:
+    if not municipio or municipio == 'Seleccione':
         df = app.consulta_inicial_pro.copy()
-        df = df[['FAMI_ESTRATOVIVIENDA', *PUNTAJES_SABERPRO]].groupby('FAMI_ESTRATOVIVIENDA', as_index=False).mean().round(2).sort_values('FAMI_ESTRATOVIVIENDA')
-        df.columns = ['Estado', *PROMEDIOS_SABERPRO]
-        return df.to_json(orient='records'), 200
 
     elif app.consulta_municipio_pro is not None:
         df = app.consulta_municipio_pro.copy()
-        df = df[['FAMI_ESTRATOVIVIENDA', *PUNTAJES_SABERPRO]].groupby('FAMI_ESTRATOVIVIENDA', as_index=False).mean().round(2).sort_values('FAMI_ESTRATOVIVIENDA')
-        df.columns = ['Estado', *PROMEDIOS_SABERPRO]
-        return df.to_json(orient='records'), 200
-    
+
     else:
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
 
+    df = df[['FAMI_ESTRATOVIVIENDA', *PUNTAJES_SABERPRO]].groupby('FAMI_ESTRATOVIVIENDA', as_index=False).mean().round(2).sort_values('FAMI_ESTRATOVIVIENDA')
+    df.columns = ['Estado', *PROMEDIOS_SABERPRO]
+    return df.to_json(orient='records'), 200
 
 
 #<---------------- Integración con Rasa ---------------->
