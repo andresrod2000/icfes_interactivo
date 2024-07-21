@@ -151,7 +151,8 @@ def consulta_municipio():
     municipio = request.args.get('municipio', type=str)
     if not municipio:
         return jsonify({"error": "Falta el parámetro 'municipio'"})
-
+    elif municipio == 'DEPARTAMENTO':
+        return "Consulta exitosa, se mantiene la consulta inicial", 200
     df = app.consulta_inicial.copy()
     df = df[df['cole_mcpio_ubicacion'] == municipio]
     df.drop(columns=['cole_mcpio_ubicacion'], inplace=True)
@@ -268,6 +269,8 @@ def consulta_municipio_pro():
     municipio = request.args.get('municipio', type=str)
     if not municipio:
         return jsonify({"error": "Falta el parámetro 'municipio'}"}), 400
+    elif municipio == 'DEPARTAMENTO':
+        return "Consulta exitosa, se mantiene la consulta inicial", 200
 
     df = app.consulta_inicial_pro.copy()
     df = df[df['ESTU_INST_MUNICIPIO'] == municipio]
