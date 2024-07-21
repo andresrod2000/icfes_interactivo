@@ -196,7 +196,7 @@ def consulta_historico():
 def consulta_estrato():
     municipio = request.args.get('municipio', type=str)
 
-    if not municipio or municipio == 'Seleccione':
+    if not municipio or municipio == 'DEPARTAMENTO':
         df = app.consulta_inicial.copy()
 
     elif app.consulta_municipio is not None:
@@ -309,7 +309,7 @@ def consulta_historico_pro():
 def consulta_estrato_pro():
     municipio = request.args.get('municipio', type=str)
 
-    if not municipio or municipio == 'Seleccione':
+    if not municipio or municipio == 'DEPARTAMENTO':
         df = app.consulta_inicial_pro.copy()
 
     elif app.consulta_municipio_pro is not None:
