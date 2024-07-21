@@ -322,7 +322,7 @@ def consulta_estrato_pro():
         return jsonify({"error": "No se ha cargado la consulta por municipio"}), 400
 
     df = df[['FAMI_ESTRATOVIVIENDA', *PUNTAJES_SABERPRO]].groupby('FAMI_ESTRATOVIVIENDA', as_index=False).mean().round(2).sort_values('FAMI_ESTRATOVIVIENDA')
-    df.columns = ['Estado', *PROMEDIOS_SABERPRO]
+    df.columns = ['Estrato', *PROMEDIOS_SABERPRO]
     return df.to_json(orient='records'), 200
 
 
