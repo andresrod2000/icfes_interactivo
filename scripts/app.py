@@ -140,7 +140,7 @@ def get_municipios():
     if app.consulta_inicial is None:
         return jsonify({"error": "No se ha cargado la consulta inicial"}), 400
     df = app.consulta_inicial.copy()
-    municipios = df['cole_mcpio_ubicacion'].unique().tolist()
+    municipios = df['cole_mcpio_ubicacion'].unique().sort_values().tolist()
     return municipios
 
 # <-------------------- Consulta por municipio ------------------------->
@@ -257,7 +257,7 @@ def get_municipios_pro():
     if app.consulta_inicial_pro is None:
         return jsonify({"error": "No se ha cargado la consulta inicial"}), 400
     df = app.consulta_inicial_pro.copy()
-    municipios = df['ESTU_INST_MUNICIPIO'].unique().tolist()
+    municipios = df['ESTU_INST_MUNICIPIO'].unique().sort_values().tolist()
     return municipios
 
 # <-------------------- Consulta por municipio ------------------------->
